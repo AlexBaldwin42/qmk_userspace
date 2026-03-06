@@ -1,59 +1,65 @@
-# QMK Userspace
+# Simian QMK Userspace
 
-This is a template repository which allows for an external set of QMK keymaps to be defined and compiled. This is useful for users who want to maintain their own keymaps without having to fork the [main QMK repository](https://github.com/qmk/qmk_firmware). You must still fork the main QMK repository if writing firmware for a *new* keyboard.
+External QMK userspace for the **simian** keymap. Contains the full simityl keyboard definition and shared keymap code that works across multiple keyboards.
 
-## Howto configure your build targets
+## Keyboards
 
-1. Run the normal `qmk setup` procedure if you haven't already done so -- see [QMK Docs](https://docs.qmk.fm/#/newbs) for details.
-1. Fork this repository
-1. Clone your fork to your local machine
-1. Enable userspace in QMK config using `qmk config user.overlay_dir="$(realpath qmk_userspace)"`
-1. Add a new keymap for your board using `qmk new-keymap`
-    * This will create a new keymap in the `keyboards` directory, in the same location that would normally be used in the main QMK repository. For example, if you wanted to add a keymap for the Planck, it will be created in `keyboards/planck/keymaps/<your keymap name>`
-    * You can also create a new keymap using `qmk new-keymap -kb <your_keyboard> -km <your_keymap>`
-    * Alternatively, add your keymap manually by placing it in the location specified above.
-    * `layouts/<layout name>/<your keymap name>/keymap.*` is also supported if you prefer the layout system
-1. Add your keymap(s) to the build by running `qmk userspace-add -kb <your_keyboard> -km <your_keymap>`
-    * This will automatically update your `qmk.json` file
-    * Corresponding `qmk userspace-remove -kb <your_keyboard> -km <your_keymap>` will delete it
-    * Listing the build targets can be done with `qmk userspace-list`
-1. Commit your changes
+| Keyboard | Layout | Notes |
+|---|---|---|
+| **simityl** | 36-key split (3x5+3) | Custom skeletyl + PMW3389 trackball + encoder, RP2040 |
+| **crkbd** (corne) | 42-key split (3x6+3) | Uses shared 36-key core with outer columns |
+| **bastardkb/scylla** | 58-key split (4x6+5) | Uses shared 36-key core with number row + outer columns |
 
-## Howto build with GitHub
+## Setup from scratch
 
-1. In the GitHub Actions tab, enable workflows
-1. Push your changes above to your forked GitHub repository
-1. Look at the GitHub Actions for a new actions run
-1. Wait for the actions run to complete
-1. Inspect the Releases tab on your repository for the latest firmware build
+1. **Set up QMK** (vanilla upstream — no fork needed):
+   ```
+   qmk setup
+   ```
 
-## Howto build locally
+2. **Clone this repo:**
+   ```
+   git clone git@github.com:AlexBaldwin42/qmk_userspace.git ~/qmk_userspace
+   ```
 
-1. Run the normal `qmk setup` procedure if you haven't already done so -- see [QMK Docs](https://docs.qmk.fm/#/newbs) for details.
-1. Fork this repository
-1. Clone your fork to your local machine
-1. `cd` into this repository's clone directory
-1. Set global userspace path: `qmk config user.overlay_dir="$(realpath .)"` -- you MUST be located in the cloned userspace location for this to work correctly
-    * This will be automatically detected if you've `cd`ed into your userspace repository, but the above makes your userspace available regardless of your shell location.
-1. Compile normally: `qmk compile -kb your_keyboard -km your_keymap` or `make your_keyboard:your_keymap`
+3. **Point QMK at it:**
+   ```
+   qmk config user.overlay_dir="$(realpath ~/qmk_userspace)"
+   ```
 
-Alternatively, if you configured your build targets above, you can use `qmk userspace-compile` to build all of your userspace targets at once.
+4. **Compile:**
+   ```
+   qmk compile -kb simityl -km simian
+   ```
 
-## Extra info
+## Build all targets at once
 
-If you wish to point GitHub actions to a different repository, a different branch, or even a different keymap name, you can modify `.github/workflows/build_binaries.yml` to suit your needs.
-
-To override the `build` job, you can change the following parameters to use a different QMK repository or branch:
 ```
-    with:
-      qmk_repo: qmk/qmk_firmware
-      qmk_ref: master
+qmk userspace-compile
 ```
 
-If you wish to manually manage `qmk_firmware` using git within the userspace repository, you can add `qmk_firmware` as a submodule in the userspace directory instead. GitHub Actions will automatically use the submodule at the pinned revision if it exists, otherwise it will use the default latest revision of `qmk_firmware` from the main repository.
+## File structure
 
-This can also be used to control which fork is used, though only upstream `qmk_firmware` will have support for external userspace until other manufacturers update their forks.
+```
+users/simian/
+├── simian.h            — layers, custom keycodes, weak function declarations
+├── simian.c            — process_record_user, tapping term, shared behavior
+├── wrappers.h          — home row mod macros, layer definitions, layout wrappers
+├── simian_pointing.c   — drag scroll, DPI, sniping (only if POINTING_DEVICE_ENABLE)
+├── simian_encoder.c    — layer-aware encoder (only if ENCODER_ENABLE)
+├── simian_rgb.c        — priority layer color indicators (only if RGB_MATRIX_ENABLE)
+├── config.h            — shared config (tapping term, permissive hold, caps word)
+└── rules.mk            — conditional source inclusion, feature enables
 
-1. (First time only) `git submodule add https://github.com/qmk/qmk_firmware.git`
-1. (To update) `git submodule update --init --recursive`
-1. Commit your changes to your userspace repository
+keyboards/simityl/      — full keyboard definition (pins, matrix, LED map)
+keyboards/simityl/keymaps/simian/   — thin keymap using shared wrappers
+keyboards/crkbd/keymaps/simian/     — corne keymap
+keyboards/bastardkb/scylla/keymaps/simian/  — scylla keymap
+```
+
+## PMW3360 variant
+
+One simityl keyboard uses a PMW3360 sensor instead of PMW3389. To build for it, change the driver in `keyboards/simityl/keymaps/simian/rules.mk`:
+```
+POINTING_DEVICE_DRIVER = pmw3360
+```
