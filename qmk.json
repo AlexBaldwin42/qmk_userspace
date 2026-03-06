@@ -3,6 +3,7 @@
     "build_targets": [
         ["simityl", "simian"],
         ["crkbd", "simian"],
-        ["bastardkb/scylla/blackpill", "simian"]
+        ["bastardkb/scylla/blackpill", "simian"],
+        ["puttzpad", "default"]
     ]
 }
