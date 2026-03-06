@@ -3,29 +3,31 @@
 
 #pragma once
 
-// Thumb cluster keys
-#define NUM_TAB LT(LAYER_NUMPAD, KC_TAB)
-#define LW_BSPC LT(LAYER_LOWER, KC_BSPC)
-#define RAI_DEL LT(LAYER_RAISE, KC_DEL)
-#define NUM_ESC LT(LAYER_NUMPAD, KC_ESC)
-#define RAI_ENT LT(LAYER_RAISE, KC_ENT)
-#define LW_SPC  LT(LAYER_LOWER, KC_SPC)
+// ─── Key aliases ──────────────────────────────────────────────────────────────
 
-// Adjust layer tap keys
+// Thumb cluster
+#define NUM_TAB  LT(LAYER_NUMPAD, KC_TAB)
+#define LW_BSPC  LT(LAYER_LOWER, KC_BSPC)
+#define RAI_DEL  LT(LAYER_RAISE, KC_DEL)
+#define NUM_ESC  LT(LAYER_NUMPAD, KC_ESC)
+#define RAI_ENT  LT(LAYER_RAISE, KC_ENT)
+#define LW_SPC   LT(LAYER_LOWER, KC_SPC)
+
+// Adjust layer taps
 #define ADJ_KCQ  LT(LAYER_ADJUST, KC_Q)
 #define ADJ_SLSH LT(LAYER_ADJUST, KC_SLSH)
 
 // Lower layer mod-taps
-#define ALT_F2  MT(MOD_LALT, KC_F2)
-#define CTL_F1  MT(MOD_LCTL, KC_F1)
-#define CTL_F10 MT(MOD_LCTL, KC_F10)
-#define ALT_F9  MT(MOD_LALT, KC_F9)
+#define CTL_F1   MT(MOD_LCTL, KC_F1)
+#define ALT_F2   MT(MOD_LALT, KC_F2)
+#define ALT_F9   MT(MOD_LALT, KC_F9)
+#define CTL_F10  MT(MOD_LCTL, KC_F10)
 
 // Raise layer mod-taps
-#define CTL_EQL RCTL_T(KC_EQL)
+#define CTL_EQL  RCTL_T(KC_EQL)
 
 // Misc
-#define ALT_DOT MT(MOD_LALT, KC_DOT)
+#define ALT_DOT  MT(MOD_LALT, KC_DOT)
 
 // ─── Home row mod macros ──────────────────────────────────────────────────────
 
@@ -63,42 +65,42 @@
 // clang-format off
 
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
-#define LAYOUT_LAYER_BASE                                                        \
+#define LAYOUT_LAYER_BASE                                                              \
     ADJ_KCQ,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,   \
        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN,   \
        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT,ADJ_SLSH,  \
                       NUM_TAB, LW_BSPC, RAI_DEL, RAI_ENT,  LW_SPC, NUM_ESC
 
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
-#define LAYOUT_LAYER_POINTER                                                     \
+#define LAYOUT_LAYER_POINTER                                                           \
     _______, _______, _______, _______, _______, MS_BTN1, DRGSCRL, _______, _______, _______,   \
     _______, _______, _______, _______, _______, MS_BTN2, SNIPING_MODE,  _______, _______, _______, \
     _______, _______, _______, _______, _______, _______, SNIPING_TOGGLE,_______, _______, _______, \
                       _______, MS_BTN1, MS_BTN2, _______, _______, _______
 
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
-#define LAYOUT_LAYER_LOWER                                                       \
+#define LAYOUT_LAYER_LOWER                                                             \
     G(KC_1), G(KC_2), G(KC_3), G(KC_4), G(KC_5), G(KC_6), G(KC_7), G(KC_8), G(KC_9), G(KC_0), \
     KC_WBAK, KC_WFWD, KC_HOME,  KC_END,  KC_APP, KC_LEFT, KC_DOWN,   KC_UP,KC_RIGHT,   KC_F6, \
      CTL_F1,  ALT_F2, C(G(KC_LEFT)), C(G(KC_RIGHT)), KC_F5, KC_F5, KC_F7, KC_F8, ALT_F9, CTL_F10, \
                       _______, _______, _______, _______, _______, _______
 
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
-#define LAYOUT_LAYER_RAISE                                                       \
+#define LAYOUT_LAYER_RAISE                                                             \
     KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_QUOT,  KC_GRV, \
     KC_QUOT,  KC_DQT, KC_LPRN, KC_RPRN, KC_PGUP, KC_MINS, CTL_EQL, KC_LCBR, KC_RCBR, KC_BSLS, \
      KC_ESC, _______,  KC_ESC,  KC_ENT, KC_PGDN, KC_UNDS, KC_PLUS, KC_LBRC, KC_RBRC, KC_PIPE, \
                       _______, _______, _______, _______, _______, _______
 
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
-#define LAYOUT_LAYER_ADJUST                                                      \
+#define LAYOUT_LAYER_ADJUST                                                            \
     XXXXXXX, TG(LAYER_NUMPAD), KC_CAPS, XXXXXXX, XXXXXXX, QK_BOOT, XXXXXXX, XXXXXXX, XXXXXXX, RM_TOGG, \
     RM_TOGG, RM_NEXT, RM_VALU, RM_VALD, XXXXXXX, XXXXXXX, KC_WBAK, KC_WFWD,  KC_APP, DRG_TOG, \
     RM_NEXT, RM_PREV, RM_HUEU, RM_HUED, QK_BOOT, XXXXXXX, XXXXXXX,DPI_DOWN,  DPI_UP,DPI_CYCLE,\
                       _______, _______, _______, KC_VOLD, KC_VOLU, KC_MPLY
 
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
-#define LAYOUT_LAYER_NUMPAD                                                      \
+#define LAYOUT_LAYER_NUMPAD                                                            \
     TG(LAYER_NUMPAD), KC_F9, KC_F8,   KC_F7,  KC_F12, KC_CIRC,    KC_7,    KC_8,    KC_9, KC_ASTR, \
       KC_NO,   KC_F6,   KC_F5,   KC_F4,  KC_F11, KC_MINS,    KC_4,    KC_5,    KC_6,  KC_EQL, \
     KC_LSFT,   KC_F3,   KC_F2,   KC_F1,  KC_F10, KC_PLUS,    KC_1,    KC_2,    KC_3, KC_SLSH, \
@@ -109,7 +111,8 @@
 // ─── Wrapper macros for different keyboard layouts ────────────────────────────
 
 // Simityl / Skeletyl: 3x5 + 3 thumb keys per side
-#define LAYOUT_split_3x5_3_wrapper(...) LAYOUT_split_3x5_3(__VA_ARGS__)
+#define LAYOUT_split_3x5_3_wrapper(...)                                        \
+    LAYOUT_split_3x5_3(__VA_ARGS__)
 
 // Corne (crkbd): 3x6 + 3 thumb keys per side — adds outer column
 #define _CORNE_WRAP6(                                                          \
@@ -122,7 +125,8 @@
     OL3, L21, L22, L23, L24, L25, R26, R27, R28, R29, R30, OR3,               \
               LT1, LT2, LT3,                   RT1, RT2, RT3
 
-#define LAYOUT_split_3x6_3_wrapper(...) LAYOUT_split_3x6_3(_CORNE_WRAP6(__VA_ARGS__))
+#define LAYOUT_split_3x6_3_wrapper(...)                                        \
+    LAYOUT_split_3x6_3(_CORNE_WRAP6(__VA_ARGS__))
 
 // Helper: wrap a 36-key layer into 42 keys for corne by adding outer columns
 #define CORNE_OUTER(OL1, OL2, OL3, OR1, OR2, OR3, ...)                        \
