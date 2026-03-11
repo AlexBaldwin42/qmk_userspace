@@ -4,6 +4,7 @@
         ["simityl", "simian"],
         ["crkbd", "simian"],
         ["bastardkb/scylla/blackpill", "simian"],
-        ["puttzpad", "default"]
+        ["puttzpad", "default"],
+        ["klein", "simian"]
     ]
 }

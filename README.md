@@ -10,6 +10,7 @@ External QMK userspace containing keymaps and shared code for multiple keyboards
 | **puttzpad** | 20-key ortho (5x4) | Custom numpad with encoder, RP2040 |
 | **crkbd** (corne) | 42-key split (3x6+3) | Uses shared 36-key core with outer columns |
 | **bastardkb/scylla** | 58-key split (4x6+5) | Uses shared 36-key core with number row + outer columns |
+| **klein** | 36-key split (3x5+3) | Klein keyboard by snsten, Splinky RP2040 (CONVERT_TO = sparkfun_pm2040) |
 
 ## Setup from scratch
 
@@ -31,6 +32,7 @@ External QMK userspace containing keymaps and shared code for multiple keyboards
 4. **Compile:**
    ```
    qmk compile -kb simityl -km simian
+   qmk compile -kb klein -km simian
    qmk compile -kb puttzpad -km default
    ```
 
@@ -42,7 +44,7 @@ qmk userspace-compile
 
 ## Architecture
 
-Custom keyboard definitions (simityl, puttzpad) live in the **QMK fork** (`AlexBaldwin42/qmk_firmware` branch `simian_main`) because QMK's overlay system only supports keymaps, not new keyboards. Upstream keyboards (crkbd, scylla) need no fork.
+Custom keyboard definitions (simityl, puttzpad, klein) live in the **QMK fork** (`AlexBaldwin42/qmk_firmware` branch `simian_main`) because QMK's overlay system only supports keymaps, not new keyboards. Upstream keyboards (crkbd, scylla) need no fork.
 
 All keymap code and shared behavior lives in **this userspace repo**.
 
@@ -63,6 +65,7 @@ keyboards/simityl/keymaps/simian/           — simityl keymap (thin wrapper)
 keyboards/puttzpad/keymaps/default/         — puttzpad keymap (standalone numpad)
 keyboards/crkbd/keymaps/simian/             — corne keymap
 keyboards/bastardkb/scylla/keymaps/simian/  — scylla keymap
+keyboards/klein/keymaps/simian/             — klein keymap (thin wrapper, CONVERT_TO svlinky)
 ```
 
 ## PMW3360 variant
