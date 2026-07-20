@@ -12,5 +12,7 @@
 #    define SPLIT_LAYER_STATE_ENABLE
 #endif
 
-// Encoder
+// Encoder — the simityl fleet has mixed encoders: most are 4 pulses/detent,
+// some are 2. If the encoder only scrolls every other click, build with
+// ENCODER_RESOLUTION 2 for that unit (double-scroll means go back to 4).
 #define ENCODER_RESOLUTION 4
