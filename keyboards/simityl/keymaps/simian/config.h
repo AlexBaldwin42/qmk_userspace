@@ -35,6 +35,10 @@
 #endif
 
 // Encoder — the simityl fleet has mixed encoders: most are 4 pulses/detent,
-// some are 2. If the encoder only scrolls every other click, build with
-// ENCODER_RESOLUTION 2 for that unit (double-scroll means go back to 4).
-#define ENCODER_RESOLUTION 4
+// some are 2. Selected by SIMITYL_UNIT in rules.mk, which passes -D on the
+// command line for the non-default unit; this is only the fallback. If a build
+// scrolls every other detent the resolution is too high, twice per detent and
+// it is too low.
+#ifndef ENCODER_RESOLUTION
+#    define ENCODER_RESOLUTION 4
+#endif

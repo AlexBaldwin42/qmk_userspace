@@ -68,12 +68,20 @@ keyboards/bastardkb/scylla/keymaps/simian/  — scylla keymap
 keyboards/klein/keymaps/simian/             — klein keymap (thin wrapper, CONVERT_TO svlinky)
 ```
 
-## PMW3360 variant
+## simityl fleet variants
 
-One simityl keyboard uses a PMW3360 sensor instead of PMW3389. To build for it, change the driver in `keyboards/simityl/keymaps/simian/rules.mk`:
+The simityl units are not identical. Most carry a PMW3389 with a 4-pulse/detent
+encoder; at least one has a PMW3360 with a 2-pulse encoder. Select the unit at
+build time — no source edit needed:
+
 ```
-POINTING_DEVICE_DRIVER = pmw3360
+qmk compile -kb simityl -km simian                       # 3389 + 4-pulse (default)
+qmk compile -kb simityl -km simian -e SIMITYL_UNIT=3360  # 3360 + 2-pulse
 ```
+
+Flashing the wrong pointing driver fails the sensor signature check and leaves
+the pointer silently dead, with no other symptom. The wrong encoder resolution
+just scrolls every other detent (too high) or twice per detent (too low).
 
 ## Adding VIA support to puttzpad
 
