@@ -2,6 +2,28 @@
 
 External QMK userspace containing keymaps and shared code for multiple keyboards.
 
+## Where things live — this repo is only half of it
+
+The simityl work is split across two repos. Both halves are deliberate, but the boundary is
+not obvious from either side:
+
+| | this repo (`alex/qmk_userspace`) | the fork (`alex/qmk_firmware`, branch `simian_main`) |
+|---|---|---|
+| keymaps, `users/simian/`, layout wrappers | **yes** | no |
+| board definition, `config.h`, pin assignments | no | **yes** |
+| hardware design docs and reference images | no | **yes** — `keyboards/simityl/.claude/skills/qmk-hardware/reference/` |
+| geometry/cross-talk generators, `ball_socket.scad` | no | **yes** — same skill directory |
+| **issue tracker** | **yes — all of it** | not used |
+
+**Issues live here; the documents they cite live in the fork.** The hardware material stays
+there because it is the bundled content of the directory-scoped `qmk-hardware` skill — it sits
+beside the `config.h` it describes and the scripts that produced its numbers, and separating
+them breaks that. Issues live here because every deliverable they track is code in this repo.
+
+The fork is at `github.com/AlexBaldwin42/qmk_firmware` and mirrored to
+`git.whoup.org/alex/qmk_firmware`. Note its `origin` is **upstream** `qmk/qmk_firmware`, so
+pushes must name the `fork` or `gitea` remote explicitly.
+
 ## Keyboards
 
 | Keyboard | Layout | Notes |
