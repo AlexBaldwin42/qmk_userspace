@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "simian.h"
+#include "keymap_introspection.h"
 
 // Weak functions — overridable per-keyboard
 __attribute__((weak)) bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
@@ -12,6 +13,23 @@ __attribute__((weak)) void keyboard_post_init_keymap(void) {}
 
 void keyboard_post_init_user(void) {
     keyboard_post_init_keymap();
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+#ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
+    // Mouse look moves the ball constantly, so auto mouse would flip the
+    // pointer layer on and off all game long. The game layers outrank it, so
+    // it can't change what keys do, but it's churn for nothing and it would
+    // still be sitting underneath when gaming mode is switched off. The target
+    // layer has to come off *before* disabling, or it can be left stuck on.
+    if (layer_state_cmp(state, LAYER_GAME)) {
+        state = remove_auto_mouse_layer(state, false);
+        set_auto_mouse_enable(false);
+    } else {
+        set_auto_mouse_enable(true);
+    }
+#endif
+    return state;
 }
 
 #ifdef TAPPING_TERM_PER_KEY
@@ -30,6 +48,21 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_keymap(keycode, record)) {
+        return false;
+    }
+
+    if (keycode == GAME_TOG) {
+        // GAME_TOG lives on the shared adjust layer, but not every board
+        // defines the game layers. Turning on a layer past the end of the
+        // keymap resolves every key to KC_NO — including the way back out.
+        if (record->event.pressed && LAYER_GAME_FN < keymap_layer_count()) {
+            if (IS_LAYER_ON(LAYER_GAME)) {
+                layer_off(LAYER_GAME_FN);
+                layer_off(LAYER_GAME);
+            } else {
+                layer_on(LAYER_GAME);
+            }
+        }
         return false;
     }
 

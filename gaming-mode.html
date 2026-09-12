@@ -1,0 +1,276 @@
+<title>Simityl Gaming Mode</title>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155; --border-hover: #475569;
+    --text: #e2e8f0; --text2: #94a3b8; --muted: #64748b; --accent: #38bdf8;
+    --blue: #3b82f6; --green: #10b981; --cyan: #06b6d4; --purple: #a855f7;
+    --amber: #f59e0b; --red: #ef4444; --slate: #64748b;
+    --key: clamp(34px, 5.4vw, 64px);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.45;
+    padding-inline: 16px; padding-block: 24px 48px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1rem; margin: 0 0 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .08em; }
+  .sub { color: var(--text2); margin: 0 0 20px; }
+  code { background: #0b1222; border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font-size: .88em; color: var(--accent); }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+
+  /* Controls */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .tabs { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .tabs button { background: transparent; color: var(--text2); border: 0; padding: 8px 14px; font: inherit; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--purple); color: #fff; }
+  .toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--text2); cursor: pointer; user-select: none; font-size: .92rem; }
+  .hint { color: var(--muted); font-size: .85rem; }
+
+  /* Board */
+  .board-scroll { overflow-x: auto; padding-bottom: 6px; }
+  .board {
+    display: grid; grid-template-columns: repeat(16, var(--key));
+    grid-auto-rows: var(--key); gap: 5px; width: max-content; margin: 0 auto;
+  }
+  .key {
+    position: relative; border-radius: 9px; border: 1px solid var(--border);
+    background: #16213a; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-weight: 600; font-size: clamp(10px, 1.35vw, 15px);
+    transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
+  }
+  .key .cap {
+    position: absolute; top: 3px; left: 5px; font-size: clamp(8px, .95vw, 11px);
+    font-weight: 500; color: var(--muted); display: none;
+  }
+  .show-caps .key .cap { display: block; }
+  .key .note { position: absolute; bottom: 2px; right: 5px; font-size: clamp(7px, .8vw, 10px); color: var(--muted); font-weight: 500; }
+  .key.thumb { border-radius: 14px; }
+  .key.trns { opacity: .38; border-style: dashed; }
+  .key.held { box-shadow: 0 0 0 2px var(--purple) inset; }
+  .key[data-fn] { cursor: pointer; }
+
+  .c-move  { background: #334155; border-color: #e2e8f0; color: #fff; }
+  .c-mod   { background: color-mix(in srgb, var(--amber) 22%, #16213a); border-color: var(--amber); }
+  .c-mouse { background: color-mix(in srgb, var(--cyan) 20%, #16213a); border-color: var(--cyan); }
+  .c-num   { background: color-mix(in srgb, var(--green) 20%, #16213a); border-color: var(--green); }
+  .c-fkey  { background: color-mix(in srgb, var(--blue) 18%, #16213a); border-color: var(--blue); }
+  .c-mode  { background: color-mix(in srgb, var(--red) 25%, #16213a); border-color: var(--red); }
+  .c-layer { background: color-mix(in srgb, var(--purple) 30%, #16213a); border-color: var(--purple); }
+
+  /* LED preview mode: what the board actually shows */
+  .led .key { background: #4c1d95; border-color: #7c3aed; color: #ddd6fe; }
+  .led .key.lit { background: #f8fafc; border-color: #fff; color: #0f172a; box-shadow: 0 0 14px #f8fafcaa; }
+  .led .key.trns { opacity: 1; border-style: solid; }
+  .led .key .cap, .led .key .note { color: #a78bfa; }
+  .led .key.lit .cap, .led .key.lit .note { color: #475569; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: .85rem; color: var(--text2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 14px; height: 14px; border-radius: 4px; border: 1px solid; display: inline-block; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .steps { margin: 0; padding-left: 20px; }
+  .steps li { margin-bottom: 8px; }
+  .kbd { display: inline-block; min-width: 1.6em; padding: 0 6px; border: 1px solid var(--border-hover); border-bottom-width: 3px; border-radius: 6px; background: #0b1222; font-weight: 600; font-size: .88em; text-align: center; }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--text2); font-weight: 600; }
+
+  /* Column-shift diagram */
+  .shift svg { width: 100%; height: auto; max-width: 560px; display: block; margin: 0 auto; }
+  .warn { border-left: 3px solid var(--amber); padding-left: 10px; color: var(--text2); font-size: .9rem; }
+  footer { color: var(--muted); font-size: .82rem; margin-top: 18px; }
+
+  @media print {
+    :root { --key: 46px; }
+    body { background: #fff; color: #000; padding-block: 0; }
+    .controls, .hint, .led-panel { display: none !important; }
+    .panel { background: #fff; border-color: #999; break-inside: avoid; }
+    .key { background: #fff !important; color: #000 !important; border-color: #555 !important; box-shadow: none !important; }
+    .key .cap { display: block; color: #666; }
+    h2, .sub, th, .legend { color: #333; }
+  }
+</style>
+
+<div class="wrap">
+  <h1>Simityl gaming mode</h1>
+  <p class="sub">Reference card for <code>LAYER_GAME</code> and <code>LAYER_GAME_FN</code>, from <code>users/simian/wrappers.h</code>. The game layers have no tap-hold keys, so a held key just stays held.</p>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="tabs" role="group" aria-label="Layer">
+        <button id="tab-game" aria-pressed="true">Game</button>
+        <button id="tab-fn" aria-pressed="false">Game + FN held</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="caps" checked> Show normal keycaps</label>
+      <label class="toggle"><input type="checkbox" id="led"> LED preview</label>
+      <span class="hint">Hold the FN thumb key (or press <span class="kbd">F</span>) to preview the FN layer.</span>
+    </div>
+    <div class="board-scroll"><div class="board show-caps" id="board"></div></div>
+    <div class="legend" id="legend">
+      <span><i class="sw" style="background:#334155;border-color:#e2e8f0"></i>Movement</span>
+      <span><i class="sw" style="background:#f59e0b44;border-color:#f59e0b"></i>Held modifiers</span>
+      <span><i class="sw" style="background:#06b6d433;border-color:#06b6d4"></i>Mouse</span>
+      <span><i class="sw" style="background:#10b98133;border-color:#10b981"></i>Numbers</span>
+      <span><i class="sw" style="background:#3b82f633;border-color:#3b82f6"></i>F-keys</span>
+      <span><i class="sw" style="background:#a855f744;border-color:#a855f7"></i>FN layer key</span>
+      <span><i class="sw" style="background:#ef444444;border-color:#ef4444"></i>Exit gaming mode</span>
+      <span><i class="sw" style="border-color:#475569;border-style:dashed"></i>Pass-through to the game layer</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Turning it on and off</h2>
+      <ol class="steps">
+        <li><b>On:</b> hold <span class="kbd">/</span> (or <span class="kbd">Q</span>) to open the adjust layer, then tap <span class="kbd">G</span>.</li>
+        <li><b>Off:</b> tap the same <span class="kbd">/</span> key (bottom-right corner). That position is <code>GAME_TOG</code> on the game layer, and it also works while FN is held.</li>
+        <li>Unplugging the keyboard also leaves gaming mode. It isn't saved, so the board always boots into the normal layout.</li>
+      </ol>
+      <p class="warn">While gaming mode is on, auto-mouse is turned off, so moving the ball never switches to the pointer layer. The mouse buttons are on the game layer itself, in the same spots as on the pointer layer.</p>
+    </div>
+
+    <div class="panel led-panel">
+      <h2>How you know it's on</h2>
+      <p style="margin-top:0">It isn't a single colour, because every hue is already close to another indicator. Instead, the whole board turns <b style="color:#c084fc">purple</b> and only the keys that matter light up <b>white</b>:</p>
+      <ul class="steps">
+        <li><b>Game layer:</b> W A S D are lit.</li>
+        <li><b>FN held:</b> the number keys are lit instead.</li>
+      </ul>
+      <p>No other mode lights individual keys, so the pattern means gaming mode. The normal rainbow swirl means you're typing. Tick <i>LED preview</i> above to see it.</p>
+      <p class="warn">The indicator follows the brightness setting and needs RGB turned on. If the LEDs are off (<code>RM_TOGG</code>), gaming mode gives no visual signal.</p>
+    </div>
+  </div>
+
+  <div class="panel shift">
+    <h2>Why the left hand is shifted one column</h2>
+    <p style="margin-top:0">A 36-key board has no column to the left of <span class="kbd">A</span>. So every left-hand key <b>sends the letter one column to the left</b> of its normal keycap. Your hand stays on its usual home position (index finger on F), but the game gets WASD laid out like a full-size keyboard. The free pinky column becomes plain Tab, Shift and Ctrl, which you can hold as long as you like.</p>
+    <svg viewBox="0 0 560 170" role="img" aria-label="Home row: keycaps A S D F G send Shift A S D F">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+        </marker>
+      </defs>
+      <text x="0" y="36" fill="#94a3b8" font-size="12" font-family="Segoe UI, system-ui">keycap</text>
+      <text x="0" y="146" fill="#94a3b8" font-size="12" font-family="Segoe UI, system-ui">sends</text>
+      <g font-family="Segoe UI, system-ui" font-weight="600" font-size="18" text-anchor="middle">
+        <!-- keycaps -->
+        <rect x="70" y="10" width="70" height="44" rx="9" fill="#1e293b" stroke="#475569"/><text x="105" y="39" fill="#e2e8f0">A</text>
+        <rect x="160" y="10" width="70" height="44" rx="9" fill="#1e293b" stroke="#475569"/><text x="195" y="39" fill="#e2e8f0">S</text>
+        <rect x="250" y="10" width="70" height="44" rx="9" fill="#1e293b" stroke="#475569"/><text x="285" y="39" fill="#e2e8f0">D</text>
+        <rect x="340" y="10" width="70" height="44" rx="9" fill="#1e293b" stroke="#a855f7" stroke-width="2"/><text x="375" y="39" fill="#e2e8f0">F</text>
+        <rect x="430" y="10" width="70" height="44" rx="9" fill="#1e293b" stroke="#475569"/><text x="465" y="39" fill="#e2e8f0">G</text>
+        <!-- sends -->
+        <rect x="70" y="118" width="70" height="44" rx="9" fill="#f59e0b33" stroke="#f59e0b"/><text x="105" y="146" fill="#e2e8f0" font-size="15">Shift</text>
+        <rect x="160" y="118" width="70" height="44" rx="9" fill="#334155" stroke="#e2e8f0"/><text x="195" y="146" fill="#fff">A</text>
+        <rect x="250" y="118" width="70" height="44" rx="9" fill="#334155" stroke="#e2e8f0"/><text x="285" y="146" fill="#fff">S</text>
+        <rect x="340" y="118" width="70" height="44" rx="9" fill="#334155" stroke="#e2e8f0" stroke-width="2"/><text x="375" y="146" fill="#fff">D</text>
+        <rect x="430" y="118" width="70" height="44" rx="9" fill="#334155" stroke="#e2e8f0"/><text x="465" y="146" fill="#fff">F</text>
+      </g>
+      <g stroke="#64748b" stroke-width="2" marker-end="url(#arrow)">
+        <line x1="105" y1="58" x2="105" y2="112"/><line x1="195" y1="58" x2="195" y2="112"/>
+        <line x1="285" y1="58" x2="285" y2="112"/><line x1="375" y1="58" x2="375" y2="112"/>
+        <line x1="465" y1="58" x2="465" y2="112"/>
+      </g>
+      <text x="530" y="36" fill="#a855f7" font-size="11" font-family="Segoe UI, system-ui" text-anchor="end">index</text>
+    </svg>
+    <p class="hint" style="text-align:center">The top and bottom rows shift the same way: Q W E R T sends Tab Q W E R, and Z X C V B sends Ctrl Z X C V. T, G and B no longer fit, so they're on the FN layer.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Which keys matter in each game</h2>
+    <table>
+      <tr><th></th><th>Minecraft</th><th>Factorio</th></tr>
+      <tr><td>Encoder</td><td>Scroll through the hotbar</td><td>Zoom</td></tr>
+      <tr><td>Pinky</td><td>Shift = sneak, Ctrl = sprint</td><td>Shift and Ctrl for clicks</td></tr>
+      <tr><td>Letter keys</td><td>E inventory, Q drop, F off-hand</td><td>E inventory, Q pipette, R rotate, F pick up, Z drop</td></tr>
+      <tr><td>Right hand</td><td>T chat, / command, F3 debug, F5 camera</td><td>M map, T research</td></tr>
+      <tr><td>FN thumb</td><td>1–9 hotbar, plus T/G/B</td><td>1–0 quickbar, Alt on the FN outer thumb</td></tr>
+    </table>
+  </div>
+
+  <footer>Source: <code>users/simian/wrappers.h</code> (layouts), <code>users/simian/simian.c</code> (<code>GAME_TOG</code>, auto-mouse), <code>users/simian/simian_rgb.c</code> (LEDs). Physical layout from <code>LAYOUT_split_3x5_3</code> in the simityl keyboard definition.</footer>
+</div>
+
+<script>
+// Grid positions follow keyboard.json: left alphas x 0-4, right x 11-15,
+// left thumbs x 4-6 (outer→inner), right thumbs x 9-11 (inner→outer).
+const CAPS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L',';'],
+  ['Z','X','C','V','B','N','M',',','.','/'],
+  ['Tab','Bspc','Del','Ent','Spc','Esc'],
+];
+// [label, class, note]
+const GAME = [
+  [['Tab','mod'],['Q'],['W','move'],['E'],['R'],   ['BTN1','mouse','left'],['BTN3','mouse','mid'],['BTN4','mouse','back'],['BTN5','mouse','fwd'],['Bspc']],
+  [['Shift','mod'],['A','move'],['S','move'],['D','move'],['F'], ['BTN2','mouse','right'],['SNIP','mouse','hold'],['T'],['M'],['/']],
+  [['Ctrl','mod'],['Z'],['X'],['C'],['V'],        ['Alt','mod'],['`'],['F3','fkey'],['F5','fkey'],['EXIT','mode','game']],
+  [['Esc'],['Space'],['FN','layer','hold']],
+  [['BTN1','mouse'],['BTN2','mouse'],['Enter']],
+];
+const T = null; // transparent → falls through to GAME
+const FN = [
+  [['1','num'],['2','num'],['3','num'],['4','num'],['5','num'], ['F1','fkey'],['F2','fkey'],['F3','fkey'],['F4','fkey'],['F5','fkey']],
+  [T,['6','num'],['7','num'],['8','num'],['9','num'],           ['F6','fkey'],['F7','fkey'],['F8','fkey'],['F9','fkey'],['F10','fkey']],
+  [T,['0','num'],['T'],['G'],['B'],                             ['F11','fkey'],['F12','fkey'],['PrtSc','fkey'],T,T],
+  [['Alt','mod'],T,['FN','layer','held']],
+  [T,T,T],
+];
+const LIT = new Set(['W','A','S','D','1','2','3','4','5','6','7','8','9','0']);
+
+const board = document.getElementById('board');
+let fnHeld = false;
+
+function cell(def, fallback, cap, x, y, thumb) {
+  const el = document.createElement('div');
+  const trns = def === null;
+  const [label, cls, note] = trns ? fallback : def;
+  el.className = 'key' + (thumb ? ' thumb' : '') + (cls ? ' c-' + cls : '') + (trns ? ' trns' : '');
+  el.style.gridColumn = (x + 1);
+  el.style.gridRow = (y + 1);
+  el.innerHTML = `<span class="cap">${cap}</span>${label}` + (note ? `<span class="note">${note}</span>` : '');
+  // LEDs light whatever the resolved key sends, including pass-through keys.
+  if (LIT.has(label)) el.classList.add('lit');
+  if (cls === 'layer') {
+    el.dataset.fn = '1';
+    if (fnHeld) el.classList.add('held');
+  }
+  return el;
+}
+
+function render() {
+  const layer = fnHeld ? FN : GAME;
+  board.replaceChildren();
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 10; c++) {
+      const x = c < 5 ? c : c + 6;
+      board.append(cell(layer[r][c], GAME[r][c], CAPS[r][c], x, r, false));
+    }
+  }
+  [4, 5, 6].forEach((x, i) => board.append(cell(layer[3][i], GAME[3][i], CAPS[3][i], x, 3, true)));
+  [9, 10, 11].forEach((x, i) => board.append(cell(layer[4][i], GAME[4][i], CAPS[3][i + 3], x, 3, true)));
+  document.getElementById('tab-game').setAttribute('aria-pressed', String(!fnHeld));
+  document.getElementById('tab-fn').setAttribute('aria-pressed', String(fnHeld));
+}
+
+function setFn(on) { if (fnHeld !== on) { fnHeld = on; render(); } }
+
+document.getElementById('tab-game').onclick = () => setFn(false);
+document.getElementById('tab-fn').onclick = () => setFn(true);
+document.getElementById('caps').onchange = e => board.classList.toggle('show-caps', e.target.checked);
+document.getElementById('led').onchange = e => board.classList.toggle('led', e.target.checked);
+
+// Press-and-hold the FN key on the card, like the real one.
+let heldByPointer = false;
+board.addEventListener('pointerdown', e => {
+  if (e.target.closest('[data-fn]') && !fnHeld) { heldByPointer = true; setFn(true); }
+});
+window.addEventListener('pointerup', () => { if (heldByPointer) { heldByPointer = false; setFn(false); } });
+window.addEventListener('keydown', e => { if ((e.key === 'f' || e.key === 'F') && !e.repeat) setFn(true); });
+window.addEventListener('keyup', e => { if (e.key === 'f' || e.key === 'F') setFn(false); });
+
+render();
+</script>

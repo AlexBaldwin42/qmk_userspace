@@ -29,6 +29,9 @@
 // Misc
 #define ALT_DOT  MT(MOD_LALT, KC_DOT)
 
+// Gaming
+#define GAME_FN  MO(LAYER_GAME_FN)
+
 // ─── Home row mod macros ──────────────────────────────────────────────────────
 
 // Full GACS home row mods (both hands)
@@ -95,7 +98,7 @@
 /*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
 #define LAYOUT_LAYER_ADJUST                                                            \
     XXXXXXX, TG(LAYER_NUMPAD), KC_CAPS, XXXXXXX, XXXXXXX, QK_BOOT, XXXXXXX, XXXXXXX, XXXXXXX, RM_TOGG, \
-    RM_TOGG, RM_NEXT, RM_VALU, RM_VALD, XXXXXXX, XXXXXXX, KC_WBAK, KC_WFWD,  KC_APP, DRG_TOG, \
+    RM_TOGG, RM_NEXT, RM_VALU, RM_VALD, GAME_TOG, XXXXXXX, KC_WBAK, KC_WFWD,  KC_APP, DRG_TOG, \
     RM_NEXT, RM_PREV, RM_HUEU, RM_HUED, QK_BOOT, XXXXXXX, XXXXXXX,DPI_DOWN,  DPI_UP,DPI_CYCLE,\
                       _______, _______, _______, KC_VOLD, KC_VOLU, KC_MPLY
 
@@ -105,6 +108,41 @@
       KC_NO,   KC_F6,   KC_F5,   KC_F4,  KC_F11, KC_MINS,    KC_4,    KC_5,    KC_6,  KC_EQL, \
     KC_LSFT,   KC_F3,   KC_F2,   KC_F1,  KC_F10, KC_PLUS,    KC_1,    KC_2,    KC_3, KC_SLSH, \
                       _______, _______, _______,  KC_ENT,    KC_0,  KC_DOT
+
+// Gaming mode — no tap-hold anywhere, so held keys are just held keys.
+//
+// The left hand sends the key one column to the LEFT of its keycap: the index
+// finger resting on F sends D, so WASD sits under the natural home position
+// with the same geometry as a full-size board. The pinky column, which has
+// nothing left of it, becomes plain Tab/Shift/Ctrl for long sprint/sneak holds.
+// T, G and B fall off the inner column onto GAME_FN. The right hand mirrors
+// the pointer layer's mouse buttons, since auto mouse is off while gaming.
+//
+//   TAB   Q     W     E     R        BTN1  BTN3  BTN4  BTN5  BSPC
+//   LSFT  A     S     D     F        BTN2  SNIP  T     M     /
+//   LCTL  Z     X     C     V        LALT  `     F3    F5    GAME_TOG
+//               ESC   SPC   [FN]     BTN1  BTN2  ENT
+/*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
+#define LAYOUT_LAYER_GAME                                                              \
+     KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R, MS_BTN1, MS_BTN3, MS_BTN4, MS_BTN5, KC_BSPC, \
+    KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F, MS_BTN2, SNIPING_MODE, KC_T,  KC_M, KC_SLSH, \
+    KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V, KC_LALT,  KC_GRV,   KC_F3,   KC_F5, GAME_TOG, \
+                       KC_ESC,  KC_SPC, GAME_FN, MS_BTN1, MS_BTN2,  KC_ENT
+
+// Held from the inner left thumb. Numbers sit under the same fingers as on a
+// full-size board with WASD (pinky 1 … index 4, reach 5). The pinky column
+// stays Shift/Ctrl so Shift+number and Ctrl+number still work.
+//
+//   1     2     3     4     5        F1    F2    F3    F4    F5
+//   ▽     6     7     8     9        F6    F7    F8    F9    F10
+//   ▽     0     T     G     B        F11   F12   PSCR  ▽     ▽
+//               LALT  ▽     ▼        ▽     ▽     ▽
+/*        ╭──────────────────────────────────╮ ╭──────────────────────────────────╮ */
+#define LAYOUT_LAYER_GAME_FN                                                           \
+       KC_1,    KC_2,    KC_3,    KC_4,    KC_5,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5, \
+    _______,    KC_6,    KC_7,    KC_8,    KC_9,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10, \
+    _______,    KC_0,    KC_T,    KC_G,    KC_B,  KC_F11,  KC_F12, KC_PSCR, _______, _______, \
+                      KC_LALT, _______, _______, _______, _______, _______
 
 // clang-format on
 

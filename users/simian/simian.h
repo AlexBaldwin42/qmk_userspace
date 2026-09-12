@@ -13,6 +13,10 @@ enum simian_layers {
     LAYER_ADJUST,
     LAYER_NUMPAD,
     LAYER_POINTER,
+    // Gaming mode. Keep these last: a layer only shows through when no higher
+    // active layer covers it, so the game layers must outrank everything else.
+    LAYER_GAME,
+    LAYER_GAME_FN,
 };
 
 // Custom keycodes — portable across keyboards (uses SAFE_RANGE, not QK_KB)
@@ -24,6 +28,7 @@ enum simian_keycodes {
     DPI_CYCLE,
     SNIPING_MODE,
     SNIPING_TOGGLE,
+    GAME_TOG,
     NEW_SAFE_RANGE,
 };
 
